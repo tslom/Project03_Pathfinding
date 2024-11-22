@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# A* Pathfinding Visualizer
 
-## Getting Started
+This project implements a visual representation of the A* Pathfinding algorithm using React and TypeScript. It allows users to customize the grid, set start and end nodes, add walls, and visualize the shortest path calculated by the algorithm.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Customizable Grid:** Adjust the grid dimensions and tile states.
+- **Start/End Nodes:** Click to set the start and end positions for the pathfinding.
+- **Walls:** Add or remove wall tiles to block the path.
+- **Diagonal Movement:** Toggle diagonal movement in the algorithm.
+- **Heuristic Choices:** Switch between Manhattan and Diagonal distance for heuristic calculation.
+- **Random Maze Generation:** Generate random mazes using Prim's algorithm.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Heuristic Choices
 
-## Learn More
+The algorithm supports two heuristics to estimate the shortest path:
 
-To learn more about Next.js, take a look at the following resources:
+### Manhattan Distance
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Used when diagonal movement is disabled.**
+- **Formula:** `D * (dx + dy)`
+    - `D` is the cost of moving in a straight line.
+    - `dx` and `dy` are the horizontal and vertical distances, respectively.
+- Suitable for grids where movement is restricted to straight lines (up, down, left, right).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Diagonal Distance
 
-## Deploy on Vercel
+- **Used when diagonal movement is enabled.**
+- **Formula:** `D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)`
+    - `D` is the cost of straight-line movement.
+    - `D2` is the cost of diagonal movement (usually greater than `D`).
+    - `dx` and `dy` are the horizontal and vertical distances, respectively.
+    - `min(dx, dy)` ensures diagonal movement is factored properly.
+- Suitable for grids where diagonal movement is allowed, providing a more realistic path.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Here:
+- `D` is the cost of moving in a straight line.
+- `D2` is the cost of moving diagonally (typically slightly higher than `D`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Algorithm Implementation
+
+The A* algorithm finds the shortest path by:
+1. Initializing the open set with the start node.
+2. Iteratively selecting the node with the smallest `fCost` (where `fCost = gCost + hCost`).
+3. Evaluating neighboring nodes:
+    - Adding valid neighbors to the open set.
+    - Updating costs (`gCost` and `hCost`) and parent nodes as needed.
+4. Terminating when the end node is reached or the open set is empty.
+5. Backtracking from the end node to reconstruct the path.
+
+Key methods in the implementation:
+- **`getValidNeighbors`:** Filters neighbors based on grid boundaries, wall presence, and closed nodes.
+- **`getManhattanDistance` and `getDiagonalDistance`:** Calculate heuristic values for the respective movement modes.
+- **`startPathFind`:** Main function that drives the A* algorithm, updates state for rendering, and visualizes the process.
+
+---
+
+## Testing the Code
+
+To test the A* Pathfinding Visualizer, follow these steps:
+
+### Prerequisites
+- Ensure you have **Node.js** installed.
+- Install dependencies using `npm install`.
+
+### Run the Application
+1. Start the development server with:
+   ```bash
+   npm run dev
+   ```
+
+2. Visit (http://localhost:3000/) to view and test out the project. 
